@@ -54,9 +54,10 @@ public:
 
     // inserindo código para editar os dados dos participantes, meno o ID
 
-    Participante* participante = buscar_id(id)
-        if (participante)
+    Participante* participante = buscar_id(id) // localiza o participante pelo método buscar_id
+        if (participante) // verifica se o participante foi encontrado ou não(avalia se o ponteiro participante é diferente de nullptr).
         {
+        //Se o participante for encontrado, o ponteiro participante será atribuído ao endereço de memória do participante encontrado, ou seja se o id for indeferente a nullptr ele rodará o código if.
            cout << "Editando dados do participante com o id: " << id << endl;
            cout << "Nome: ";
            cin >> participante->nome;
@@ -69,6 +70,7 @@ public:
            cout >> "Dados alterados com sucesso!!"; 
         } else {
             cout >> "Participante com ID: " << id << "não foi encontrado!"; 
+        // aqui o código será rodado se o participante for = a nullptr, sendo assim o id e o participante nao existe.
         }
         
 };
