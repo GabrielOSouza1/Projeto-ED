@@ -51,4 +51,24 @@ public:
 
         // se ele econtrar um participante ele retorna um pornteiro para esse participante, caso contrario retorna nullptr para indicar que o participante não foi encontrado.
     }
+
+    // inserindo código para editar os dados dos participantes, meno o ID
+
+    Participante* participante = buscar_id(id)
+        if (participante)
+        {
+           cout << "Editando dados do participante com o id: " << id << endl;
+           cout << "Nome: ";
+           cin >> participante->nome;
+           cout << "Semestre: "; 
+           cin >> participante->semestre;
+           cout << "Ano: ";
+           cin >> participante->ano;
+           cout >> "Curso (DSM/SI/GE): ";
+           cin >> participante->curso;
+           cout >> "Dados alterados com sucesso!!"; 
+        } else {
+            cout >> "Participante com ID: " << id << "não foi encontrado!"; 
+        }
+        
 };
