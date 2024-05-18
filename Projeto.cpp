@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include <vector>
+#include <list>
 #include <stdlib.h>
 
 
@@ -20,8 +20,8 @@ struct Participante
 // criar um classe para gerenciar a turma do café
 
 class TurmaDoCafe{
-    private: // declarando o vectir como private para apenas os métodos da classe poderem acessa-lo e modifica-lo, ou seja nenhum codigo fora da classe pode mexer.
-    vector<Participante> participantes; //é usado para armazenar todos os participantes adicionados à turma. permitindo que a classe mantenha uma lista dinâmica de participantes, que podem ser adicionados e removidos conforme necessário.
+private:
+    list<Participante> participantes; //é usado para armazenar todos os participantes adicionados à turma. permitindo que a classe mantenha uma lista dinâmica de participantes, que podem ser adicionados e removidos conforme necessário.
 
 
 public: 
@@ -54,23 +54,62 @@ public:
 
     // inserindo código para editar os dados dos participantes, meno o ID
 
-    Participante* participante = buscar_id(id) // localiza o participante pelo método buscar_id
-        if (participante) // verifica se o participante foi encontrado ou não(avalia se o ponteiro participante é diferente de nullptr).
-        {
-        //Se o participante for encontrado, o ponteiro participante será atribuído ao endereço de memória do participante encontrado, ou seja se o id for indeferente a nullptr ele rodará o código if.
-           cout << "Editando dados do participante com o id: " << id << endl;
-           cout << "Nome: ";
-           cin >> participante->nome;
-           cout << "Semestre: "; 
-           cin >> participante->semestre;
-           cout << "Ano: ";
-           cin >> participante->ano;
-           cout >> "Curso (DSM/SI/GE): ";
-           cin >> participante->curso;
-           cout >> "Dados alterados com sucesso!!"; 
+   
+    // Método para editar dados do participante (exceto o ID)
+    void editar_dados(int id) {
+        Participante* participante = buscar_id(id);
+        if (participante) {
+            cout << "Editar dados do participante com ID " << id << endl;
+            cout << "Nome: ";
+            cin >>  participante->nome;
+            cout << "Semestre: ";
+            cin >> participante->semestre;
+            cout << "Ano: ";
+            cin >> participante->ano;
+            cout << "Curso DSM/SI/GE: ";
+            cin >> participante->curso;
+            cout << "Dados do participante atualizados com sucesso!" << endl;
         } else {
-            cout >> "Participante com ID: " << id << "não foi encontrado!"; 
-        // aqui o código será rodado se o participante for = a nullptr, sendo assim o id e o participante nao existe.
+            cout << "Participante com ID " << id << " não encontrado." << endl;
         }
+    }
+
         
 };
+
+ int main() {
+    TurmaDoCafe turma_cafe;
+     // Função para inserir novos participantes
+        auto inserir_participante = [&turma_cafe]() {
+            cout << "Inserir novo louco por café" << endl;
+            int id;
+            string nome, semestre, curso;
+            int ano;
+            cout << "Qual seu id: ";
+            cin >> id;
+            cin.ignore(); 
+            cout << "Qual seu nome (pode ser so o primeiro)";
+            cin >> nome;
+            cout << "Em qual semestre você está?: ";
+            cin >> semestre;
+            cout << "em qual ano você entrou: ";
+            cin >> ano;
+            cout << "Qual curso você está cursando DSM/GE/SI";
+            cin >> curso;
+            turma_cafe.adicionar_participante(id, nome, semestre, ano, curso);
+            cout << "Participante adicionado com sucesso!" << endl;
+
+
+
+        };
+
+        //Função para editar participantes
+        auto editar_dados = [&turma_cafe](){
+            cout << "Editar dados!!" << endl;
+            int id;
+           cout << "ID do participante a ser editado: ";
+            cin >> id;
+            cin.ignore(); // Limpar o buffer do teclado
+            turma_cafe.editar_dados(id);
+        };
+ };
