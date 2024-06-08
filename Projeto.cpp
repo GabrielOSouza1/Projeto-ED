@@ -52,21 +52,6 @@ void mostrar_participantes() {
     }
 }
 
-void ler_participantes_de_arquivo(const string& nome_arquivo) {
-    ifstream arquivo(nome_arquivo);
-    if (!arquivo.is_open()) {
-        cout << "Erro ao abrir o arquivo " << nome_arquivo << endl;
-        return;
-    }
-
-    int id, ano;
-    string nome, semestre, curso;
-    while (arquivo >>  id >> nome >> semestre >> ano >> curso) {
-        adicionar_participante(id, nome, semestre, ano, curso);
-    }
-
-    arquivo.close();
-}
 
 void salvar_participantes_em_arquivo(const string& nome_arquivo) {
     ofstream arquivo(nome_arquivo);
@@ -117,18 +102,19 @@ void editar_dados(int id) {
 
 int main() {
     // Carregar os participantes do arquivo ao iniciar o programa
-    ler_participantes_de_arquivo("participantes.txt");
+    
 
     int opcao;
     do {
         cout << "Escolha uma opção:" << endl;
         cout << "1. Adicionar participante" << endl;
         cout << "2. Mostrar participantes" << endl;
-        cout << "3. Salvar participantes em arquivo" << endl; // Opção adicionada
+        cout << "3. Salvar participantes em arquivo" << endl; 
         cout << "4. Editar dados de participante" << endl;
         cout << "5. Sair" << endl;
         cout << "Opção: ";
         cin >> opcao;
+        cin.ignore();
         
         switch(opcao) {
             case 1: {
@@ -138,9 +124,9 @@ int main() {
                 cin >> id;
                 cout << "Qual seu nome: ";
                 cin.ignore();
-                getline(cin, nome);
+                cin >> nome;
                 cout << "Em qual semestre você está: ";
-                getline(cin, semestre);
+                cin >> semestre;
                 cout << "Em qual ano você entrou: ";
                 cin >> ano;
                 cout << "Qual curso você está cursando (DSM/GE/SI): ";
@@ -157,16 +143,17 @@ int main() {
                 cout << "Participantes salvos em arquivo." << endl;
                 break;
             }
-            case 4: {
+             case 4: {
                 int id;
                 cout << "ID do participante a ser editado: ";
                 cin >> id;
                 editar_dados(id);
                 break;
             }
-            case 5:
+            case 5: {
                 cout << "Saindo..." << endl;
                 break;
+            }
             default:
                 cout << "Opção inválida. Tente novamente." << endl;
         }
