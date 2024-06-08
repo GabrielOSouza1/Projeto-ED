@@ -1,115 +1,184 @@
 #include <iostream>
+#include <fstream>
 #include <string>
-#include <list>
-#include <stdlib.h>
-
 
 using namespace std;
 
-
-// aqui estou criando uma struct para armazenar os dados do participante
-struct Participante
-{
+struct Participante {
     int id;
     string nome;
     string semestre;
     int ano;
     string curso;
+    Participante* proximo;
 };
 
-// criar um classe para gerenciar a turma do café
+Participante* inicio = nullptr;
 
-class TurmaDoCafe{
-private:
-    list<Participante> participantes; //é usado para armazenar todos os participantes adicionados à turma. permitindo que a classe mantenha uma lista dinâmica de participantes, que podem ser adicionados e removidos conforme necessário.
+void adicionar_participante(int id, string nome, string semestre, int ano, string curso) {
+    Participante* novo_participante = new Participante;
+    novo_participante->id = id;
+    novo_participante->nome = nome;
+    novo_participante->semestre = semestre;
+    novo_participante->ano = ano;
+    novo_participante->curso = curso;
+    novo_participante->proximo = nullptr;
 
-
-public: 
-
-// adicionar participante 
-    void adicionar_participante(int id, string nome, string semestre, int ano, string curso) /* Esta linha define a assinatura do método */ {
-        Participante novo_participante = {id, nome, semestre, ano, curso}; // Esta é uma variável que criEI para armazenar as informações do participante que queremos adicionar à turma, como uma ficha em branco
-        participantes.push_back(novo_participante); // estou dizendo que a ficha preenchida com os dados do novo participante sera adicionada ao final da lista
-    }
-
-    void mostrar_participantes() {
-        cout << "lista de participantes do cafézin!!";
-            for(const auto& participante : participantes) /* Este é um loop que percorre todos os participantes na lista */ {
-                cout << "ID: " << participante.id << endl << "Nome: " << participante.nome << endl << "Semestre: " << participante.semestre << endl << "Ano ingressante: " << participante.ano << endl << "Curso: " << endl;
-            }
-    }
-
-    Participante* buscar_id(int id) {
-        for(auto& participante : participantes){
-            if (participante.id == id) //  verifica se o id do participante atual é igual ao id fornecido como parâmetro
-            {
-            return &participante;
-            }
-            
+    if (inicio == nullptr) {
+        inicio = novo_participante;
+    } else {
+        Participante* atual = inicio;
+        while (atual->proximo != nullptr) {
+            atual = atual->proximo;
         }
-        return nullptr;
-
-        // se ele econtrar um participante ele retorna um pornteiro para esse participante, caso contrario retorna nullptr para indicar que o participante não foi encontrado.
+        atual->proximo = novo_participante;
     }
+}
 
-    // inserindo código para editar os dados dos participantes, meno o ID
-
-   
-    // Método para editar dados do participante (exceto o ID)
-    void editar_dados(int id) {
-        Participante* participante = buscar_id(id);
-        if (participante) {
-            cout << "Editar dados do participante com ID " << id << endl;
-            cout << "Nome: ";
-            cin >>  participante->nome;
-            cout << "Semestre: ";
-            cin >> participante->semestre;
-            cout << "Ano: ";
-            cin >> participante->ano;
-            cout << "Curso DSM/SI/GE: ";
-            cin >> participante->curso;
-            cout << "Dados do participante atualizados com sucesso!" << endl;
-        } else {
-            cout << "Participante com ID " << id << " não encontrado." << endl;
+void mostrar_participantes() {
+    cout << "Lista de participantes do café:" << endl;
+    Participante* atual = inicio;
+    if (atual == nullptr) {
+        cout << "Nenhum participante cadastrado." << endl;
+    } else {
+        while (atual != nullptr) {
+            cout << "ID: " << atual->id << endl
+                 << "Nome: " << atual->nome << endl
+                 << "Semestre: " << atual->semestre << endl
+                 << "Ano ingressante: " << atual->ano << endl
+                 << "Curso: " << atual->curso << endl << endl;
+            atual = atual->proximo;
         }
     }
+}
 
+void ler_participantes_de_arquivo(const string& nome_arquivo) {
+    ifstream arquivo(nome_arquivo);
+    if (!arquivo.is_open()) {
+        cout << "Erro ao abrir o arquivo " << nome_arquivo << endl;
+        return;
+    }
+
+    int id, ano;
+    string nome, semestre, curso;
+    while (arquivo >>  id >> nome >> semestre >> ano >> curso) {
+        adicionar_participante(id, nome, semestre, ano, curso);
+    }
+
+    arquivo.close();
+}
+
+void salvar_participantes_em_arquivo(const string& nome_arquivo) {
+    ofstream arquivo(nome_arquivo);
+    if (!arquivo.is_open()) {
+        cout << "Erro ao abrir o arquivo para escrita: " << nome_arquivo << endl;
+        return;
+    }
+
+    Participante* atual = inicio;
+    while (atual != nullptr) {
+        arquivo << atual->id << "|" << atual->nome << "|" << atual->semestre << "|"
+                << atual->ano << "|" << atual->curso << endl;
+        atual = atual->proximo;
+    }
+
+    arquivo.close();
+}
+
+Participante* buscar_id(int id) {
+    Participante* atual = inicio;
+    while (atual != nullptr) {
+        if (atual->id == id) {
+            return atual;
+        }
+        atual = atual->proximo;
+    }
+    return nullptr;
+}
+
+void editar_dados(int id) {
+    Participante* participante = buscar_id(id);
+    if (participante != nullptr) {
+        cout << "Editar dados do participante com ID " << id << endl;
+        cout << "Novo nome: ";
+        cin.ignore();
+        getline(cin, participante->nome);
+        cout << "Novo semestre: ";
+        getline(cin, participante->semestre);
+        cout << "Novo ano: ";
+        cin >> participante->ano;
+        cout << "Novo curso (DSM/SI/GE): ";
+        cin >> participante->curso;
+        cout << "Dados do participante atualizados com sucesso!" << endl;
+    } else {
+        cout << "Participante com ID " << id << " não encontrado." << endl;
+    }
+}
+
+int main() {
+    // Carregar os participantes do arquivo ao iniciar o programa
+    ler_participantes_de_arquivo("participantes.txt");
+
+    int opcao;
+    do {
+        cout << "Escolha uma opção:" << endl;
+        cout << "1. Adicionar participante" << endl;
+        cout << "2. Mostrar participantes" << endl;
+        cout << "3. Salvar participantes em arquivo" << endl; // Opção adicionada
+        cout << "4. Editar dados de participante" << endl;
+        cout << "5. Sair" << endl;
+        cout << "Opção: ";
+        cin >> opcao;
         
-};
+        switch(opcao) {
+            case 1: {
+                int id, ano;
+                string nome, semestre, curso;
+                cout << "Qual seu ID: ";
+                cin >> id;
+                cout << "Qual seu nome: ";
+                cin.ignore();
+                getline(cin, nome);
+                cout << "Em qual semestre você está: ";
+                getline(cin, semestre);
+                cout << "Em qual ano você entrou: ";
+                cin >> ano;
+                cout << "Qual curso você está cursando (DSM/GE/SI): ";
+                cin >> curso;
+                adicionar_participante(id, nome, semestre, ano, curso);
+                cout << "Participante adicionado com sucesso!" << endl;
+                break;
+            }
+            case 2:
+                mostrar_participantes();
+                break;
+            case 3: {
+                salvar_participantes_em_arquivo("participantes.txt");
+                cout << "Participantes salvos em arquivo." << endl;
+                break;
+            }
+            case 4: {
+                int id;
+                cout << "ID do participante a ser editado: ";
+                cin >> id;
+                editar_dados(id);
+                break;
+            }
+            case 5:
+                cout << "Saindo..." << endl;
+                break;
+            default:
+                cout << "Opção inválida. Tente novamente." << endl;
+        }
+    } while(opcao != 5);
 
- int main() {
-    TurmaDoCafe turma_cafe;
-     // Função para inserir novos participantes
-        auto inserir_participante = [&turma_cafe]() {
-            cout << "Inserir novo louco por café" << endl;
-            int id;
-            string nome, semestre, curso;
-            int ano;
-            cout << "Qual seu id: ";
-            cin >> id;
-            cin.ignore(); 
-            cout << "Qual seu nome (pode ser so o primeiro)";
-            cin >> nome;
-            cout << "Em qual semestre você está?: ";
-            cin >> semestre;
-            cout << "em qual ano você entrou: ";
-            cin >> ano;
-            cout << "Qual curso você está cursando DSM/GE/SI";
-            cin >> curso;
-            turma_cafe.adicionar_participante(id, nome, semestre, ano, curso);
-            cout << "Participante adicionado com sucesso!" << endl;
+    // Limpar a memória alocada para os participantes
+    Participante* atual = inicio;
+    while (atual != nullptr) {
+        Participante* proximo = atual->proximo;
+        delete atual;
+        atual = proximo;
+    }
 
-
-
-        };
-
-        //Função para editar participantes
-        auto editar_dados = [&turma_cafe](){
-            cout << "Editar dados!!" << endl;
-            int id;
-           cout << "ID do participante a ser editado: ";
-            cin >> id;
-            cin.ignore(); // Limpar o buffer do teclado
-            turma_cafe.editar_dados(id);
-        };
- };
+    return 0;
+}
