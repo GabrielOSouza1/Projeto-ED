@@ -86,10 +86,8 @@ void editar_dados(int id) {
         cout << "Editar dados do participante com ID " << id << endl;
         cout << "Novo nome: ";
         cin.ignore();
-        getline(cin, participante->nome);
         cin >> participante->nome
         cout << "Novo semestre: ";
-        getline(cin, participante->semestre);
         cin >> participante->semestre;
         cout << "Novo ano: ";
         cin >> participante->ano;
