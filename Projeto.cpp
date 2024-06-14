@@ -86,7 +86,7 @@ void editar_dados(int id) {
         cout << "Editar dados do participante com ID " << id << endl;
         cout << "Novo nome: ";
         cin.ignore();
-        cin >> participante->nome
+        cin >> participante->nome;
         cout << "Novo semestre: ";
         cin >> participante->semestre;
         cout << "Novo ano: ";
@@ -168,24 +168,51 @@ void salvar_contribuicoes_em_arquivo(const string& nome_arquivo) {
     arquivo.close();
 }
 
-int main() {
-    
+void ler_participantes_do_arquivo(const string& nome_arquivo) {
+    ifstream arquivo(nome_arquivo);
+    if (!arquivo.is_open()) {
+        cout << "Erro ao abrir o arquivo para leitura: " << nome_arquivo << endl;
+        return;
+    }
 
+    while (!arquivo.eof()) {
+        int id, ano;
+        string nome, semestre, curso;
+
+        
+        arquivo >> id;
+        arquivo.ignore(); 
+        getline(arquivo, nome, '|');
+        getline(arquivo, semestre, '|');
+        arquivo >> ano;
+        arquivo.ignore();
+        getline(arquivo, curso);
+
+        
+        adicionar_participante(id, nome, semestre, ano, curso);
+    }
+
+    arquivo.close();
+    cout << "Participantes lidos do arquivo com sucesso!" << endl;
+}
+
+int main() {
     int opcao;
     do {
         cout << "Escolha uma opção:" << endl;
         cout << "1. Adicionar participante" << endl;
         cout << "2. Mostrar participantes" << endl;
-        cout << "3. Salvar participantes em arquivo" << endl; 
+        cout << "3. Salvar participantes em arquivo" << endl;
         cout << "4. Editar dados de participante" << endl;
-        cout << "5. Cadastrar contribuição" << endl; // Nova opção no menu
-        cout << "6. Salvar contribuições em arquivo" << endl; // Nova opção no menu
-        cout << "7. Sair" << endl;
+        cout << "5. Cadastrar contribuição" << endl;
+        cout << "6. Salvar contribuições em arquivo" << endl;
+        cout << "7. Ler participantes do arquivo" << endl;
+        cout << "8. Sair" << endl;
         cout << "Opção: ";
         cin >> opcao;
         cin.ignore();
-        
-        switch(opcao) {
+
+        switch (opcao) {
             case 1: {
                 int id, ano;
                 string nome, semestre, curso;
@@ -193,9 +220,9 @@ int main() {
                 cin >> id;
                 cout << "Qual seu nome: ";
                 cin.ignore();
-                cin >> nome;
+                getline(cin, nome);
                 cout << "Em qual semestre você está: ";
-                cin >> semestre;
+                getline(cin, semestre);
                 cout << "Em qual ano você entrou: ";
                 cin >> ano;
                 cout << "Qual curso você está cursando (DSM/GE/SI): ";
@@ -212,7 +239,7 @@ int main() {
                 cout << "Participantes salvos em arquivo." << endl;
                 break;
             }
-             case 4: {
+            case 4: {
                 int id;
                 cout << "ID do participante a ser editado: ";
                 cin >> id;
@@ -220,37 +247,43 @@ int main() {
                 break;
             }
             case 5:
-                cadastrar_contribuicao(); // Chama a função para cadastrar contribuição
+                cadastrar_contribuicao();
                 break;
             case 6: {
-                salvar_contribuicoes_em_arquivo("contribuintes.txt");
+                salvar_contribuicoes_em_arquivo("contribuicoes.txt");
                 cout << "Contribuições salvas em arquivo." << endl;
                 break;
             }
             case 7: {
+                ler_participantes_do_arquivo("participantes.txt");
+                break;
+            }
+            case 8: {
                 cout << "Saindo..." << endl;
                 break;
             }
             default:
                 cout << "Opção inválida. Tente novamente." << endl;
         }
-    } while(opcao != 7);
+    } while (opcao != 8);
 
-    
-    Participante* atual = inicio;
-    while (atual != nullptr) {
-        Participante* proximo = atual->proximo;
-        delete atual;
-        atual = proximo;
+   
+    Participante* atual_participante = inicio;
+    while (atual_participante != nullptr) {
+        Participante* proximo_participante = atual_participante->proximo;
+        delete atual_participante;
+        atual_participante = proximo_participante;
     }
+    inicio = nullptr; 
 
     
     Contribuicao* atual_contribuicao = inicio_contribuicoes;
     while (atual_contribuicao != nullptr) {
-        Contribuicao* proxima = atual_contribuicao->proximo;
+        Contribuicao* proxima_contribuicao = atual_contribuicao->proximo;
         delete atual_contribuicao;
-        atual_contribuicao = proxima;
+        atual_contribuicao = proxima_contribuicao;
     }
+    inicio_contribuicoes = nullptr; 
 
     return 0;
 }
