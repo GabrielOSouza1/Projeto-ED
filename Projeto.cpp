@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -599,5 +599,4 @@ int main() {
     inicio_contribuicoes = nullptr; 
 
     return 0;
->>>>>>> 6ed3b56f8739577ab1c2722a02a0f50a2e7c4ce3
 }
